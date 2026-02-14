@@ -1,6 +1,6 @@
 --[[
-    PrivT Script - ABSOLUTE BILINGUAL + FOV CIRCLE
-    ESP + Aimbot + Speed + Jump + Noclip + Sky + FPS Boost + FOV Circle
+    PrivT Script - BILINGUAL EDITION
+    ESP + Aimbot + Speed + Jump + Noclip + Sky + FPS Boost
     РУССКИЙ / ENGLISH
 ]]
 
@@ -43,8 +43,7 @@ local Settings = {
     Noclip = false,
     FPS = false,
     Sky = false,
-    Boost = false,
-    FOVCircle = true -- Включаем круг по умолчанию
+    Boost = false
 }
 
 -- Переменные
@@ -57,41 +56,6 @@ local lastTime = tick()
 local menuOpen = true
 local currentSky = nil
 local noclipConnection = nil
-local fovRadius = 150 -- Радиус круга FOV
-local fovColor = Color3.fromRGB(255, 255, 255) -- Белый цвет
-
--- ============================================
--- FOV КРУГ (НОВЫЙ)
--- ============================================
-local fovCircle = Drawing.new("Circle")
-fovCircle.Visible = true
-fovCircle.Thickness = 2
-fovCircle.NumSides = 64 -- Сглаженный круг
-fovCircle.Filled = false
-fovCircle.Color = fovColor
-fovCircle.Radius = fovRadius
-fovCircle.Position = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
-
--- Дополнительный внутренний круг для красоты
-local fovCircleInner = Drawing.new("Circle")
-fovCircleInner.Visible = true
-fovCircleInner.Thickness = 1
-fovCircleInner.NumSides = 64
-fovCircleInner.Filled = false
-fovCircleInner.Color = Color3.fromRGB(255, 255, 255)
-fovCircleInner.Transparency = 0.5
-fovCircleInner.Radius = fovRadius - 2
-fovCircleInner.Position = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
-
--- Текст с радиусом
-local fovText = Drawing.new("Text")
-fovText.Visible = true
-fovText.Size = 12
-fovText.Font = 2
-fovText.Outline = true
-fovText.Color = Color3.fromRGB(200, 200, 255)
-fovText.Position = Vector2.new(Camera.ViewportSize.X / 2 - 20, Camera.ViewportSize.Y / 2 + fovRadius + 10)
-fovText.Text = "FOV: " .. fovRadius
 
 -- ============================================
 -- НЕБО
@@ -302,9 +266,9 @@ local function resetGraphics()
 end
 
 -- ============================================
--- AIMBOT (С УЧЕТОМ FOV)
+-- AIMBOT
 -- ============================================
-local function getClosestPlayerInFOV()
+local function getClosestPlayer()
     local closest = nil
     local shortestDist = math.huge
     local center = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
@@ -316,8 +280,7 @@ local function getClosestPlayerInFOV()
             
             if onScreen then
                 local dist = (Vector2.new(headPos.X, headPos.Y) - center).Magnitude
-                -- Учитываем только игроков в радиусе FOV
-                if dist < fovRadius and dist < shortestDist then
+                if dist < shortestDist then
                     shortestDist = dist
                     closest = player
                 end
@@ -332,27 +295,6 @@ end
 -- ГЛАВНЫЙ ЦИКЛ
 -- ============================================
 RunService.RenderStepped:Connect(function()
-    -- Обновление позиции FOV круга
-    local center = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
-    fovCircle.Position = center
-    fovCircleInner.Position = center
-    fovText.Position = Vector2.new(center.X - 30, center.Y + fovRadius + 15)
-    
-    -- Меняем цвет круга если есть цель в FOV
-    if Settings.Aimbot then
-        local target = getClosestPlayerInFOV()
-        if target then
-            fovCircle.Color = Color3.fromRGB(0, 255, 0) -- Зеленый если цель в радиусе
-            fovCircleInner.Color = Color3.fromRGB(0, 255, 0)
-        else
-            fovCircle.Color = Color3.fromRGB(255, 255, 255) -- Белый если нет цели
-            fovCircleInner.Color = Color3.fromRGB(255, 255, 255)
-        end
-    else
-        fovCircle.Color = Color3.fromRGB(100, 100, 100) -- Серый если аимбот выключен
-        fovCircleInner.Color = Color3.fromRGB(100, 100, 100)
-    end
-    
     -- FPS
     frameCount = frameCount + 1
     local currentTime = tick()
@@ -461,9 +403,9 @@ RunService.RenderStepped:Connect(function()
         for _, dist in pairs(espDistance) do dist.Visible = false end
     end
     
-    -- Aimbot с FOV
+    -- Aimbot
     if Settings.Aimbot and UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
-        local target = getClosestPlayerInFOV()
+        local target = getClosestPlayer()
         if target and target.Character and target.Character:FindFirstChild("Head") then
             Camera.CFrame = CFrame.new(Camera.CFrame.Position, target.Character.Head.Position)
         end
@@ -480,7 +422,7 @@ gui.ResetOnSpawn = false
 
 -- Главное окно
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 340, 0, 700)
+mainFrame.Size = UDim2.new(0, 340, 0, 650)
 mainFrame.Position = UDim2.new(0, 30, 0, 30)
 mainFrame.BackgroundColor3 = Color3.fromRGB(5, 5, 10)
 mainFrame.BackgroundTransparency = 0.1
@@ -537,9 +479,9 @@ gradient.Parent = topGradient
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 50)
 title.Position = UDim2.new(0, 0, 0, 5)
-title.Text = text("PRIVT FOV EDITION", "PRIVT FOV EDITION")
+title.Text = text("PRIVT ABSOLUTE", "PRIVT ABSOLUTE")
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.TextSize = 26
+title.TextSize = 28
 title.Font = Enum.Font.GothamBold
 title.BackgroundTransparency = 1
 title.Parent = topGradient
@@ -563,7 +505,7 @@ langCorner.Parent = langBtn
 local subtitle = Instance.new("TextLabel")
 subtitle.Size = UDim2.new(1, 0, 0, 20)
 subtitle.Position = UDim2.new(0, 0, 0, 60)
-subtitle.Text = text("С FOV КРУГОМ", "WITH FOV CIRCLE")
+subtitle.Text = text("ВЫБОР СКОРОСТИ И ПРЫЖКА", "SPEED & JUMP SELECTION")
 subtitle.TextColor3 = Color3.fromRGB(200, 180, 255)
 subtitle.TextSize = 11
 subtitle.Font = Enum.Font.Gotham
@@ -578,7 +520,7 @@ container.BackgroundTransparency = 1
 container.BorderSizePixel = 0
 container.ScrollBarThickness = 4
 container.ScrollBarImageColor3 = Color3.fromRGB(140, 100, 220)
-container.CanvasSize = UDim2.new(0, 0, 0, 1100)
+container.CanvasSize = UDim2.new(0, 0, 0, 1000)
 container.Parent = mainFrame
 
 -- Функция создания кнопки
@@ -762,53 +704,63 @@ local function createSlider(ruName, enName, icon, min, max, default, ruDesc, enD
     }
 end
 
--- Создаем кнопки
-local espBtn = createButton("ESP", "ESP", "👁️", "Подсветка игроков", "Player highlighting", yPos)
+-- Создаем кнопки (билингвальные)
+local espBtn = createButton("ESP", "ESP", "👁️", 
+    "Подсветка игроков", "Player highlighting", yPos)
 yPos = yPos + buttonHeight + spacing
 
-local aimBtn = createButton("AIMBOT", "AIMBOT", "🎯", "Автонаведение (ПКМ)", "Auto aim (RMB)", yPos)
+local aimBtn = createButton("AIMBOT", "AIMBOT", "🎯", 
+    "Автонаведение (ПКМ)", "Auto aim (RMB)", yPos)
 yPos = yPos + buttonHeight + spacing
 
 -- Слайдеры
-local speedSlider = createSlider("СКОРОСТЬ", "SPEED", "⚡", 16, 100, 25, "Выбери скорость бега", "Select movement speed", yPos)
+local speedSlider = createSlider("СКОРОСТЬ", "SPEED", "⚡", 
+    16, 100, 25, "Выбери скорость бега", "Select movement speed", yPos)
 yPos = yPos + 68
 
-local jumpSlider = createSlider("ПРЫЖОК", "JUMP", "🦘", 50, 200, 100, "Выбери силу прыжка", "Select jump power", yPos)
+local jumpSlider = createSlider("ПРЫЖОК", "JUMP", "🦘", 
+    50, 200, 100, "Выбери силу прыжка", "Select jump power", yPos)
 yPos = yPos + 68
 
--- Слайдер для FOV (НОВЫЙ)
-local fovSlider = createSlider("FOV РАДИУС", "FOV RADIUS", "🎯", 50, 300, fovRadius, "Радиус прицела", "Aim radius", yPos)
-yPos = yPos + 68
-
-local noclipBtn = createButton("NOCLIP", "NOCLIP", "👻", "Проходить сквозь стены", "Walk through walls", yPos)
+local noclipBtn = createButton("NOCLIP", "NOCLIP", "👻", 
+    "Проходить сквозь стены", "Walk through walls", yPos)
 yPos = yPos + buttonHeight + spacing
 
-local fpsBtn = createButton("FPS METER", "FPS METER", "📊", "Монитор производительности", "Performance monitor", yPos)
+local fpsBtn = createButton("FPS METER", "FPS METER", "📊", 
+    "Монитор производительности", "Performance monitor", yPos)
 yPos = yPos + buttonHeight + spacing
 
-local skyBtn = createButton("НЕБО", "SKY", "🌌", "Красивое небо", "Beautiful sky", yPos)
+local skyBtn = createButton("НЕБО", "SKY", "🌌", 
+    "Красивое небо", "Beautiful sky", yPos)
 yPos = yPos + buttonHeight + spacing
 
 -- Кнопки неба
-local sky1Btn = createButton("  Ночь", "  Night", "🌙", "Звездное небо", "Starry sky", yPos)
+local sky1Btn = createButton("  Ночь", "  Night", "🌙", 
+    "Звездное небо", "Starry sky", yPos)
 yPos = yPos + buttonHeight + spacing
 
-local sky2Btn = createButton("  Закат", "  Sunset", "🌅", "Розовое небо", "Pink sky", yPos)
+local sky2Btn = createButton("  Закат", "  Sunset", "🌅", 
+    "Розовое небо", "Pink sky", yPos)
 yPos = yPos + buttonHeight + spacing
 
-local sky3Btn = createButton("  День", "  Day", "☀️", "Голубое небо", "Blue sky", yPos)
+local sky3Btn = createButton("  День", "  Day", "☀️", 
+    "Голубое небо", "Blue sky", yPos)
 yPos = yPos + buttonHeight + spacing
 
-local sky4Btn = createButton("  Космос", "  Space", "🌌", "Галактика", "Galaxy", yPos)
+local sky4Btn = createButton("  Космос", "  Space", "🌌", 
+    "Галактика", "Galaxy", yPos)
 yPos = yPos + buttonHeight + spacing
 
-local sky5Btn = createButton("  Киберпанк", "  Cyberpunk", "🌈", "Неоновое небо", "Neon sky", yPos)
+local sky5Btn = createButton("  Киберпанк", "  Cyberpunk", "🌈", 
+    "Неоновое небо", "Neon sky", yPos)
 yPos = yPos + buttonHeight + spacing
 
-local boostBtn = createButton("FPS BOOST", "FPS BOOST", "🚀", "Максимальная производительность", "Maximum performance", yPos)
+local boostBtn = createButton("FPS BOOST", "FPS BOOST", "🚀", 
+    "Максимальная производительность", "Maximum performance", yPos)
 yPos = yPos + buttonHeight + spacing
 
-local resetBtn = createButton("СБРОС ВСЁ", "RESET ALL", "🔄", "Сбросить все настройки", "Reset all settings", yPos)
+local resetBtn = createButton("СБРОС ВСЁ", "RESET ALL", "🔄", 
+    "Сбросить все настройки", "Reset all settings", yPos)
 
 -- Обновляем CanvasSize
 container.CanvasSize = UDim2.new(0, 0, 0, yPos + buttonHeight)
@@ -830,8 +782,8 @@ local bottomText = Instance.new("TextLabel")
 bottomText.Size = UDim2.new(1, -20, 1, 0)
 bottomText.Position = UDim2.new(0, 10, 0, 0)
 bottomText.Text = text(
-    "ПКМ - Aimbot | Insert - скрыть | FOV круг",
-    "RMB - Aimbot | Insert - hide | FOV circle"
+    "ПКМ - Aimbot | Insert - скрыть | 🇷🇺 RU",
+    "RMB - Aimbot | Insert - hide | 🇬🇧 EN"
 )
 bottomText.TextColor3 = Color3.fromRGB(150, 150, 150)
 bottomText.TextSize = 10
@@ -850,12 +802,24 @@ langBtn.MouseButton1Click:Connect(function()
     langBtn.Text = Language == "RU" and "🇷🇺 RU" or "🇬🇧 EN"
     
     -- Обновляем заголовок
-    title.Text = text("PRIVT FOV EDITION", "PRIVT FOV EDITION")
-    subtitle.Text = text("С FOV КРУГОМ", "WITH FOV CIRCLE")
+    title.Text = text("PRIVT ABSOLUTE", "PRIVT ABSOLUTE")
+    subtitle.Text = text("ВЫБОР СКОРОСТИ И ПРЫЖКА", "SPEED & JUMP SELECTION")
     bottomText.Text = text(
-        "ПКМ - Aimbot | Insert - скрыть | FOV круг",
-        "RMB - Aimbot | Insert - hide | FOV circle"
+        "ПКМ - Aimbot | Insert - скрыть | 🇷🇺 RU",
+        "RMB - Aimbot | Insert - hide | 🇬🇧 EN"
     )
+    
+    -- Обновляем текст кнопок
+    espBtn.frame:FindFirstChildWhichIsA("TextLabel").Text = text("ESP", "ESP")
+    aimBtn.frame:FindFirstChildWhichIsA("TextLabel").Text = text("AIMBOT", "AIMBOT")
+    noclipBtn.frame:FindFirstChildWhichIsA("TextLabel").Text = text("NOCLIP", "NOCLIP")
+    fpsBtn.frame:FindFirstChildWhichIsA("TextLabel").Text = text("FPS METER", "FPS METER")
+    skyBtn.frame:FindFirstChildWhichIsA("TextLabel").Text = text("НЕБО", "SKY")
+    boostBtn.frame:FindFirstChildWhichIsA("TextLabel").Text = text("FPS BOOST", "FPS BOOST")
+    resetBtn.frame:FindFirstChildWhichIsA("TextLabel").Text = text("СБРОС ВСЁ", "RESET ALL")
+    
+    -- Обновляем описания
+    -- (для простоты оставим как есть, можно добавить полное обновление)
 end)
 
 espBtn.btn.MouseButton1Click:Connect(function()
@@ -1034,12 +998,6 @@ RunService.Heartbeat:Connect(function()
         jumpValue = jumpSlider.get()
         applyJump()
     end
-    
-    -- Обновление FOV радиуса (НОВОЕ)
-    fovRadius = fovSlider.get()
-    fovCircle.Radius = fovRadius
-    fovCircleInner.Radius = fovRadius - 2
-    fovText.Text = "FOV: " .. fovRadius
 end)
 
 -- Кнопка применения скорости
@@ -1102,18 +1060,18 @@ end)
 -- ЗАГРУЗКА
 -- ============================================
 game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = text("✨ PRIVT FOV EDITION ✨", "✨ PRIVT FOV EDITION ✨"),
-    Text = text("🇷🇺 С FOV кругом / 🇬🇧 With FOV circle", "🇷🇺 With FOV circle / 🇬🇧 With FOV circle"),
+    Title = text("✨ PRIVT BILINGUAL ✨", "✨ PRIVT BILINGUAL ✨"),
+    Text = text("🇷🇺 Русский / 🇬🇧 English", "🇷🇺 Russian / 🇬🇧 English"),
     Duration = 4
 })
 
 print[[
 ╔═══════════════════════════════════╗
-║     ✨ PRIVT FOV EDITION ✨        ║
-║  🇷🇺 РУССКАЯ / 🇬🇧 ENGLISH         ║
+║     ✨ PRIVT BILINGUAL ✨          ║
+║  🇷🇺 РУССКАЯ ВЕРСИЯ                ║
+║  🇬🇧 ENGLISH VERSION               ║
 ║  ✓ ESP + Health Bars              ║
-║  ✓ Aimbot with FOV CIRCLE         ║
-║  ✓ Adjustable FOV radius          ║
+║  ✓ Aimbot (RMB)                   ║
 ║  ✓ Speed (16-100)                 ║
 ║  ✓ Jump (50-200)                  ║
 ║  ✓ NOCLIP                         ║
